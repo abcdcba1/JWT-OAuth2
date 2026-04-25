@@ -17,6 +17,7 @@ public class TokenService {
     private final UserService userService;
 
     public String createNewAccessToken(String refreshToken) {
+        // リフレッシュトークン検証
         if(!tokenProvider.validToken(refreshToken)) {
             throw new IllegalArgumentException("Unexpected token");
         }
@@ -24,6 +25,6 @@ public class TokenService {
         Long userId = refreshTokenService.findByRefreshToken(refreshToken).getUserId();
         User user = userService.findById(userId);
 
-        return tokenProvider.generateToken(user, Duration.ofHours(2));
+        return tokenProvider.generateToken(user, Duration.ofHours(2)); // 新しいアクセストークン発給
     }
 }

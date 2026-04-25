@@ -34,17 +34,21 @@ public class Article {
     @Column(name ="content", nullable = false) // content not null
     private String content;
 
+    @Column(name = "author", nullable = false)
+    private String author;
+
     @Builder
-    public Article(String title, String content) {
+    public Article(String author, String title, String content) {
+        this.author = author;
         this.title = title;
         this.content = content;
     }
 
-    @CreatedDate // 엔티티가 생성될 때 생성 시간 저장
+    @CreatedDate
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
-    @LastModifiedDate // 엔티티가 수정될 때 수정 시간 저장
+    @LastModifiedDate
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 

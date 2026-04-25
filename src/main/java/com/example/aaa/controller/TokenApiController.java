@@ -20,11 +20,11 @@ public class TokenApiController {
     private final TokenService tokenService;
 
     @PostMapping("/api/token")
-    public ResponseEntity<CreateAccessTokenResponse> createNEwAccessToken(@RequestBody CreateAccessTokenRequest request) {
+    public ResponseEntity<CreateAccessTokenResponse> createNewAccessToken(@RequestBody CreateAccessTokenRequest request) {
         String newAccessToken = tokenService.createNewAccessToken(request.getRefreshToken());
 
         return ResponseEntity.status(HttpStatus.CREATED)
-            .body(new CreateAccessTokenResponse(newAccessToken));
+            .body(new CreateAccessTokenResponse(newAccessToken)); // http code 201とトークン送る
     }
     
 }

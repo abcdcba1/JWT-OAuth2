@@ -26,26 +26,26 @@ public class TokenProvider {
 
     private final jwtProperties jwtProperties;
 
-    public String generateToken(User user, Duration expriredAt) {
+    public String generateToken(User user, Duration expriredAt) { // 発給
         Date now = new Date();
         return makeToken(new Date(now.getTime() + expriredAt.toMillis()), user);
     }
 
-    private String makeToken(Date expiry, User user) {
+    private String makeToken(Date expiry, User user) { // 生成
         Date now = new Date();
         SecretKey secretKey = Keys.hmacShaKeyFor(jwtProperties.getSecretKey().getBytes(StandardCharsets.UTF_8));
 
         return Jwts.builder()
-                .header()                          // 헤더 시작
-                .add("typ", "JWT")      // 헤더에 타입 추가
-                .and()                             // 헤더 설정 끝내고 빌더로 복귀
-                .issuer(jwtProperties.getIssuer()) // 발행자
-                .issuedAt(now)                     // 발행 시간 (set 빼고!)
-                .expiration(expiry)                // 만료 시간 (setExpriation 아님! expiration임!)
-                .subject(user.getEmail())          // 제목 (이메일)
-                .claim("id", user.getId())    // 유저 ID 
+                .header() // ヘッダー始まり
+                .add("typ", "JWT") // ヘッダーにタイプ追加
+                .and()  // ヘッダー設定終わり
+                .issuer(jwtProperties.getIssuer()) // トークン管理者（サーバー）
+                .issuedAt(now)
+                .expiration(expiry)
+                .subject(user.getEmail())
+                .claim("id", user.getId()) // リクエスト要請者（クライアント）
                 .signWith(secretKey)
-                .compact();
+                .compact(); // 文字列にする
     }
 
     public boolean validToken(String token) {
@@ -68,11 +68,17 @@ public class TokenProvider {
         Claims claims = getClaims(token);
         Set<SimpleGrantedAuthority> authorities = Collections.singleton(new SimpleGrantedAuthority("ROLE_USER"));
 
-        return new UsernamePasswordAuthenticationToken(new org.springframework.security.core.userdetails.User(claims.getSubject(), "", authorities), token, authorities);
+        return new UsernamePasswordAuthenticationToken(new org.springframework.security.core.userdetails.User(
+            claims.getSubject(), // ユーザー識別、Eメールなど
+            "", // パスワード、トークン使用の場合は要らない
+            authorities), // 権限リスト、UserかAdminなのかなど
+            token, // トークン文字列
+            authorities // // 上のとは違って、トークン自体に記録するもの、つまり、トークンだけで検証ができるようにする、権限リスト、UserかAdminなのかなど
+        );
 
     }
 
-    public Long getUserId(String token) {
+    public Long getUserId(String token) { // リクエストのID
         Claims claims = getClaims(token);
         return claims.get("id", Long.class);
     }
@@ -81,9 +87,9 @@ public class TokenProvider {
         SecretKey secretKey = Keys.hmacShaKeyFor(jwtProperties.getSecretKey().getBytes(StandardCharsets.UTF_8));
 
         return Jwts.parser()
-                .verifyWith(secretKey)     // setSigningKey 대신 verifyWith
-                .build()                   // parserBuilder 방식이 통합되어 build() 호출 필수
-                .parseSignedClaims(token)  // parseClaimsJws 대신 parseSignedClaims
-                .getPayload();             // getBody() 대신 getPayload() (내용물이라는 뜻으로 변경)
+                .verifyWith(secretKey)
+                .build()
+                .parseSignedClaims(token)
+                .getPayload();
     }
 }

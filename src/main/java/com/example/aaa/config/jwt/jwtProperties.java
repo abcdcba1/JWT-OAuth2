@@ -9,7 +9,7 @@ import lombok.Setter;
 @Setter
 @Getter
 @Component
-@ConfigurationProperties("jwt") // 자바 클래스에 프로퍼티값을 가져와서 사용하는 애너테이션
+@ConfigurationProperties("jwt")
 public class jwtProperties {
     private String issuer;
     private String secretKey;

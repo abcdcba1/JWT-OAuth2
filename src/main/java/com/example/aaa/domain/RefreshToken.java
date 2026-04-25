@@ -1,4 +1,4 @@
-package com.example.aaa.dto;
+package com.example.aaa.domain;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
