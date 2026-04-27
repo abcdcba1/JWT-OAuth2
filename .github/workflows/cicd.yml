@@ -1,0 +1,48 @@
+#ワークフロー名指定
+name: CICD
+# ワークフローが稼働する条件
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest # 実行環境指定
+    # 実行ステップ指定
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: actions/setup-java@v3
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Build with gradlew
+        run: ./gradlew clean build -x test # テストオブジェクト除外
+      
+      # 現在時間ロード
+      - name: Get current time
+        uses: josStorer/get-current-time@2.0.2
+        id: current-time
+        with:
+          format: YYYY-MM-DDTHH-mm-steps
+          utcOffset: "+09:00"
+
+      # 配布の為のパッケージパス
+      - name: Set artifact
+        run: echo "artifact=${ls ./build/libs}" >> $GITHUB_ENV
+
+      # BeanTalk配布
+      - name: Beantalk Deploy
+        uses: einaregilsson/beanstalk-deploy@v20
+        with:
+          aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          application_name: springboot-developer
+          environment_name: springboot-developer-env
+          version_label: github-action${{steps.current-time.outputs.formattedTime}}
+          region: ap-northeast-2
+          deployment_package: ./build/libs/${{env.artifact}}

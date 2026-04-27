@@ -8,5 +8,17 @@ spring:
   h2:
     console:
       enabled: true
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: test-id
+            client-secret: test-secret
+            scope:
+              - email
+              - profile
+              # 認証値はネットにアップしてはいけない
 jwt:
   issuer: toyproject
+  secret_key: abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz
