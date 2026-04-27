@@ -33,7 +33,7 @@ jobs:
 
       # 配布の為のパッケージパス
       - name: Set artifact
-        run: echo "artifact=${ls ./build/libs}" >> $GITHUB_ENV
+        run: echo "artifact=$(ls ./build/libs)" >> $GITHUB_ENV
 
       # BeanTalk配布
       - name: Beantalk Deploy
