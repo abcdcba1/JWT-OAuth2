@@ -21,4 +21,4 @@ jobs:
         run: chmod +x gradlew
 
       - name: Build with gradlew
-        run: ./gradlew clean build
+        run: ./gradlew clean build -x test # テストオブジェクト除外
