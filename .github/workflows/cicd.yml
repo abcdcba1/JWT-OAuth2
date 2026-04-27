@@ -25,10 +25,10 @@ jobs:
       
       # 現在時間ロード
       - name: Get current time
-        uses: josStorer/get-current-time@2.0.2
+        uses: josStorer/get-current-time@v2.0.2
         id: current-time
         with:
-          format: YYYY-MM-DDTHH-mm-steps
+          format: YYYY-MM-DDTHH-mm-ss
           utcOffset: "+09:00"
 
       # 配布の為のパッケージパス
